@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.papergen.dao.QuestionDao">
+    <resultMap id="questionMap" type="com.papergen.domain.Question">
+        <result column="id" property="id"/>
+        <result column="chapter" property="chapter"/>
+        <result column="section" property="section"/>
+        <result column="level" property="level"/>
+        <result column="body" property="body"/>
+        <result column="type" property="type"/>
+        <result column="option_num" property="optionNum"/>
+        <result column="option_a" property="optionA"/>
+        <result column="option_b" property="optionB"/>
+        <result column="option_c" property="optionC"/>
+        <result column="option_d" property="optionD"/>
+        <result column="option_e" property="optionE"/>
+        <result column="right_option" property="rightOption"/>
+        <result column="right_judge" property="rightJudge"/>
+        <result column="right_filling" property="rightFilling"/>
+        <result column="right_essay" property="rightEssay"/>
+    </resultMap>
+    <sql id="base_column">
+        id, chapter, section, level, body, type, option_num, option_a, option_b, option_c, option_d, option_e, right_option, right_judge, right_filling, right_essay
+    </sql>
+    <sql id="base_column_noid">
+        chapter, section, level, body, type, option_num, option_a, option_b, option_c, option_d, option_e, right_option, right_judge, right_filling, right_essay
+    </sql>
+    <select id="selectQuestionById" resultMap="questionMap">
+        select <include refid="base_column"/> from question WHERE id=#{id};
+    </select>
+    <select id="selectAllQuestions" resultMap="questionMap">
+        select <include refid="base_column"/> from question ORDER BY type;
+    </select>
+    <select id="selectQuestionsByChapterSectionLevelType" resultMap="questionMap">
+        select <include refid="base_column"/> from question WHERE
+        <if test="chapter != null and chapter != ''">chapter=#{chapter} and </if>
+        <if test="section != null and section != ''">section=#{section} and </if>
+        type=#{type}
+        <if test="level != null">and level IN
+            <foreach collection="level" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+        </if>;
+    </select>
+    <insert id="insertQuestion" parameterType="com.papergen.domain.Question" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into question(<include refid="base_column_noid"/>)VALUES(
+        #{chapter},
+        #{section},
+        #{level},
+        #{body},
+        #{type},
+        #{optionNum},
+        #{optionA},
+        #{optionB},
+        #{optionC},
+        #{optionD},
+        #{optionE},
+        #{rightOption},
+        #{rightJudge},
+        #{rightFilling},
+        #{rightEssay}
+        )
+    </insert>
+    <update id="updateQuestion" parameterType="com.papergen.domain.Question">
+        UPDATE question set
+        chapter=#{chapter},
+        section=#{section},
+        level=#{level},
+        body=#{body},
+        type=#{type},
+        option_num=#{optionNum},
+        option_a=#{optionA},
+        option_b=#{optionB},
+        option_c=#{optionC},
+        option_d=#{optionD},
+        option_e=#{optionE},
+        right_option=#{rightOption},
+        right_judge=#{rightJudge},
+        right_filling=#{rightFilling},
+        right_essay=#{rightEssay}
+        WHERE id=#{id}
+    </update>
+    <delete id="deleteQuestionById">
+        delete from question where id=#{id}
+    </delete>
+</mapper>
