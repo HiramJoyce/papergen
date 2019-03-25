@@ -14,4 +14,6 @@ public interface PaperService {
     Paper getPaperById(String id);
 
     Paper updatePaper(Paper paper);
+
+    List<Paper> getPapersByChapterSection(String chapter, String section);
 }

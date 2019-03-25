@@ -67,10 +67,42 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="chapter" class="col-sm-2 control-label">章节</label>
+                        <label for="chapter" class="col-sm-2 control-label">年段</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="chapter" id="chapter" value=""
-                                   placeholder="格式：1-1,1-2,2-1,... 不填或者填all将随机所有章节">
+                            <div class="checkbox">
+                                <label><input type="radio" id="chapter" name="chapter" value="1" checked> 小学</label>
+                                <label><input type="radio" name="chapter" value="2"> 初中</label>
+                                <label><input type="radio" name="chapter" value="3"> 高中</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="section" class="col-sm-2 control-label">年级</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <label><input type="radio" id="section" name="section" value="1" checked> 1</label>
+                                <label><input type="radio" name="section" value="2"> 2</label>
+                                <label><input type="radio" name="section" value="3"> 3</label>
+                                <label><input type="radio" name="section" value="4"> 4</label>
+                                <label><input type="radio" name="section" value="5"> 5</label>
+                                <label><input type="radio" name="section" value="6"> 6</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject" class="col-sm-2 control-label">科目</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <label><input type="radio" id="subject" name="subject" value="1" checked> 语文</label>
+                                <label><input type="radio" name="subject" value="2"> 数学</label>
+                                <label><input type="radio" name="subject" value="3"> 外语</label>
+                                <label><input type="radio" name="subject" value="4"> 政治</label>
+                                <label><input type="radio" name="subject" value="5"> 历史</label>
+                                <label><input type="radio" name="subject" value="6"> 地理</label>
+                                <label><input type="radio" name="subject" value="7"> 物理</label>
+                                <label><input type="radio" name="subject" value="8"> 化学</label>
+                                <label><input type="radio" name="subject" value="9"> 生物</label>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -113,26 +145,26 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="judgeNum" class="col-sm-2 control-label">判断数量</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="judgeNum" id="judgeNum" value="1"
-                                   placeholder="请输入阿拉伯数字">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="judgeLevel" class="col-sm-2 control-label">难度范围</label>
-                        <div class="col-sm-10">
-                            <div class="checkbox">
-                                <label><input type="checkbox" id="judgeLevel" name="judgeLevel" value="1" checked>
-                                    1</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <label><input type="checkbox" name="judgeLevel" value="2"> 2</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <label><input type="checkbox" name="judgeLevel" value="3"> 3</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <label><input type="checkbox" name="judgeLevel" value="4"> 4</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <label><input type="checkbox" name="judgeLevel" value="5"> 5</label>
-                            </div>
-                        </div>
-                    </div>
+                    <%--<div class="form-group">--%>
+                        <%--<label for="judgeNum" class="col-sm-2 control-label">判断数量</label>--%>
+                        <%--<div class="col-sm-10">--%>
+                            <%--<input type="text" class="form-control" name="judgeNum" id="judgeNum" value="1"--%>
+                                   <%--placeholder="请输入阿拉伯数字">--%>
+                        <%--</div>--%>
+                    <%--</div>--%>
+                    <%--<div class="form-group">--%>
+                        <%--<label for="judgeLevel" class="col-sm-2 control-label">难度范围</label>--%>
+                        <%--<div class="col-sm-10">--%>
+                            <%--<div class="checkbox">--%>
+                                <%--<label><input type="checkbox" id="judgeLevel" name="judgeLevel" value="1" checked>--%>
+                                    <%--1</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--%>
+                                <%--<label><input type="checkbox" name="judgeLevel" value="2"> 2</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--%>
+                                <%--<label><input type="checkbox" name="judgeLevel" value="3"> 3</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--%>
+                                <%--<label><input type="checkbox" name="judgeLevel" value="4"> 4</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--%>
+                                <%--<label><input type="checkbox" name="judgeLevel" value="5"> 5</label>--%>
+                            <%--</div>--%>
+                        <%--</div>--%>
+                    <%--</div>--%>
                     <div class="form-group">
                         <label for="fillingNum" class="col-sm-2 control-label">填空数量</label>
                         <div class="col-sm-10">
@@ -215,8 +247,9 @@
                         <tr>
                             <th class="num"></th>
                             <th class="name">ID</th>
-                            <th class="name">章</th>
-                            <th class="operate">节</th>
+                            <th class="name">年段</th>
+                            <th class="operate">年级</th>
+                            <th class="operate">科目</th>
                             <th class="node">难度</th>
                             <th class="process">题干</th>
                             <th class="process">类型</th>
@@ -227,8 +260,31 @@
                             <tr align="center">
                                 <td><input type="checkbox" name="questionId" value="${question.id}"/></td>
                                 <td>${question.id}</td>
-                                <td>${question.chapter}</td>
-                                <td>${question.section}</td>
+                                <td>
+                                    <c:if test="${question.chapter==1}">小学</c:if>
+                                    <c:if test="${question.chapter==2}">初中</c:if>
+                                    <c:if test="${question.chapter==3}">高中</c:if>
+                                </td>
+                                <td>
+                                    <c:if test="${question.section==1}">一</c:if>
+                                    <c:if test="${question.section==2}">二</c:if>
+                                    <c:if test="${question.section==3}">三</c:if>
+                                    <c:if test="${question.section==4}">四</c:if>
+                                    <c:if test="${question.section==5}">五</c:if>
+                                    <c:if test="${question.section==6}">六</c:if>
+                                    年级
+                                </td>
+                                <td>
+                                    <c:if test="${question.subject==1}">语文</c:if>
+                                    <c:if test="${question.subject==2}">数学</c:if>
+                                    <c:if test="${question.subject==3}">外语</c:if>
+                                    <c:if test="${question.subject==4}">政治</c:if>
+                                    <c:if test="${question.subject==5}">历史</c:if>
+                                    <c:if test="${question.subject==6}">地理</c:if>
+                                    <c:if test="${question.subject==7}">物理</c:if>
+                                    <c:if test="${question.subject==8}">化学</c:if>
+                                    <c:if test="${question.subject==9}">生物</c:if>
+                                </td>
                                 <td>
                                     <c:if test="${question.level==1}">简单</c:if>
                                     <c:if test="${question.level==2}">一般</c:if>

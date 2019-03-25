@@ -16,15 +16,45 @@
         <form  class="form-horizontal" action="/updateQuestion" method="post">
             <input type="hidden" name="id" value="${question.id}">
             <div class="form-group">
-                <label for="chapter" class="col-sm-2 control-label">章</label>
+                <label for="chapter" class="col-sm-2 control-label">年段</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="chapter" id="chapter" value="${question.chapter}" placeholder="请输入阿拉伯数字">
+                    <div class="checkbox">
+                        <label><input type="radio" id="chapter" name="chapter" value="1" ${question.chapter==1 ? "checked" : ""}> 小学</label>
+                        <label><input type="radio" name="chapter" value="2" ${question.chapter==2 ? "checked" : ""}> 初中</label>
+                        <label><input type="radio" name="chapter" value="3" ${question.chapter==3 ? "checked" : ""}> 高中</label>
+                    </div>
+                    <%--<input type="text" class="form-control" name="chapter" id="chapter" value="${question.chapter}" placeholder="请输入阿拉伯数字">--%>
                 </div>
             </div>
             <div class="form-group">
-                <label for="section" class="col-sm-2 control-label">节</label>
+                <label for="section" class="col-sm-2 control-label">年级</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="section" id="section" value="${question.section}" placeholder="请输入阿拉伯数字">
+                    <div class="checkbox">
+                        <label><input type="radio" id="section" name="section" value="1" ${question.section==1 ? "checked" : ""}> 1</label>
+                        <label><input type="radio" name="section" value="2" value="1" ${question.section==2 ? "checked" : ""}> 2</label>
+                        <label><input type="radio" name="section" value="3" value="1" ${question.section==3 ? "checked" : ""}> 3</label>
+                        <label><input type="radio" name="section" value="4" value="1" ${question.section==4 ? "checked" : ""}> 4</label>
+                        <label><input type="radio" name="section" value="5" value="1" ${question.section==5 ? "checked" : ""}> 5</label>
+                        <label><input type="radio" name="section" value="6" value="1" ${question.section==6 ? "checked" : ""}> 6</label>
+                    </div>
+                    <%--<input type="text" class="form-control" name="section" id="section" value="${question.section}" placeholder="请输入阿拉伯数字">--%>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="section" class="col-sm-2 control-label">科目</label>
+                <div class="col-sm-10">
+                    <div class="checkbox">
+                        <label><input type="radio" id="subject" name="subject" value="1" ${question.subject==1 ? "checked" : ""}> 语文</label>
+                        <label><input type="radio" name="subject" value="2" ${question.subject==2 ? "checked" : ""}> 数学</label>
+                        <label><input type="radio" name="subject" value="3" ${question.subject==3 ? "checked" : ""}> 外语</label>
+                        <label><input type="radio" name="subject" value="4" ${question.subject==4 ? "checked" : ""}> 政治</label>
+                        <label><input type="radio" name="subject" value="5" ${question.subject==5 ? "checked" : ""}> 历史</label>
+                        <label><input type="radio" name="subject" value="6" ${question.subject==6 ? "checked" : ""}> 地理</label>
+                        <label><input type="radio" name="subject" value="7" ${question.subject==7 ? "checked" : ""}> 物理</label>
+                        <label><input type="radio" name="subject" value="8" ${question.subject==8 ? "checked" : ""}> 化学</label>
+                        <label><input type="radio" name="subject" value="9" ${question.subject==9 ? "checked" : ""}> 生物</label>
+                    </div>
+                    <%--<input type="text" class="form-control" name="subject" id="subject" value="${question.subject}" placeholder="请输入阿拉伯数字">--%>
                 </div>
             </div>
             <div class="form-group">

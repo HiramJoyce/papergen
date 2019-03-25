@@ -38,4 +38,9 @@ public class PaperServiceImpl implements PaperService {
 		return paperDao.updatePaper(paper) > 0 ? paper : null;
 	}
 
+	@Override
+	public List<Paper> getPapersByChapterSection(String chapter, String section) {
+		return paperDao.selectPaperByChapterSection(chapter, section);
+	}
+
 }

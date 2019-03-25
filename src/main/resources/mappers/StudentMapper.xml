@@ -5,12 +5,15 @@
 <mapper namespace="com.papergen.dao.StudentDao">
     <resultMap id="studentMap" type="com.papergen.domain.Student">
         <result column="id" property="id"/>
+        <result column="student_num" property="studentNum"/>
         <result column="user_name" property="userName"/>
         <result column="real_name" property="realName"/>
+        <result column="chapter" property="chapter"/>
+        <result column="section" property="section"/>
         <result column="password" property="password"/>
     </resultMap>
     <sql id="base_column">
-        id, user_name, real_name, password
+        id, student_num, user_name, real_name, chapter, section, password
     </sql>
     <select id="selectStudentByUserName" resultMap="studentMap">
         select <include refid="base_column"/> from student where user_name=#{userName};
@@ -18,7 +21,16 @@
     <select id="selectStudentById" resultMap="studentMap">
         select <include refid="base_column"/> from student where id=#{id};
     </select>
+    <select id="selectAllStudents" resultMap="studentMap">
+        select <include refid="base_column"/> from student order by chapter, section;
+    </select>
     <insert id="insertStudent" parameterType="com.papergen.domain.Student">
-        INSERT INTO student (<include refid="base_column"/>) VALUES (#{id}, #{userName}, #{realName}, #{password})
+        INSERT INTO student (<include refid="base_column"/>) VALUES (#{id}, #{studentNum}, #{userName}, #{realName}, #{chapter}, #{section}, #{password})
     </insert>
+    <delete id="deleteStudentById">
+        delete from student where id=#{id};
+    </delete>
+    <update id="updateStudent" parameterType="com.papergen.domain.Student">
+        update student set student_num=#{studentNum}, user_name=#{userName}, real_name=#{realName}, chapter=#{chapter}, section=#{section}, password=#{password} where id=#{id}
+    </update>
 </mapper>

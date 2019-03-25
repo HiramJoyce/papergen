@@ -23,7 +23,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">C语言课程自动组卷后台管理系统</a>
+            <a class="navbar-brand" href="/">题库生成系统</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -56,6 +56,7 @@
         <div style="margin: auto; text-align: center;">
             <button class="btn btn-link" style="color: #FFFFFF; margin-top: 10px;" href="javascript:" onclick="formSubmit('/questionsPage','mframe');this.blur();">题库管理</button>
             <button class="btn btn-link" style="color: #FFFFFF;" href="javascript:" onclick="formSubmit('/papersPage','mframe');this.blur();">试卷管理</button>
+            <button class="btn btn-link" style="color: #FFFFFF;" href="javascript:" onclick="formSubmit('/studentsPage','mframe');this.blur();">学生管理</button>
         </div>
     </div>
     <div style="margin-left: 150px; height: 100%; margin-top: -50px; padding-top: 50px;">

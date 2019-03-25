@@ -21,15 +21,42 @@
         <div style="margin: auto; text-align: center;"><span style="color: red;">Tips : 仅根据要添加的题型配置必要的参数即可！</span></div><br>
         <form  class="form-horizontal" action="/addQuestion" method="post">
             <div class="form-group">
-                <label for="chapter" class="col-sm-2 control-label">章</label>
+                <label for="chapter" class="col-sm-2 control-label">年段</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="chapter" id="chapter" value="1" placeholder="请输入阿拉伯数字">
+                    <div class="checkbox">
+                        <label><input type="radio" id="chapter" name="chapter" value="1" checked> 小学</label>
+                        <label><input type="radio" name="chapter" value="2"> 初中</label>
+                        <label><input type="radio" name="chapter" value="3"> 高中</label>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
-                <label for="section" class="col-sm-2 control-label">节</label>
+                <label for="section" class="col-sm-2 control-label">年级</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="section" id="section" value="1" placeholder="请输入阿拉伯数字">
+                    <div class="checkbox">
+                        <label><input type="radio" id="section" name="section" value="1" checked> 1</label>
+                        <label><input type="radio" name="section" value="2"> 2</label>
+                        <label><input type="radio" name="section" value="3"> 3</label>
+                        <label><input type="radio" name="section" value="4"> 4</label>
+                        <label><input type="radio" name="section" value="5"> 5</label>
+                        <label><input type="radio" name="section" value="6"> 6</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="subject" class="col-sm-2 control-label">科目</label>
+                <div class="col-sm-10">
+                    <div class="checkbox">
+                        <label><input type="radio" id="subject" name="subject" value="1" checked> 语文</label>
+                        <label><input type="radio" name="subject" value="2"> 数学</label>
+                        <label><input type="radio" name="subject" value="3"> 外语</label>
+                        <label><input type="radio" name="subject" value="4"> 政治</label>
+                        <label><input type="radio" name="subject" value="5"> 历史</label>
+                        <label><input type="radio" name="subject" value="6"> 地理</label>
+                        <label><input type="radio" name="subject" value="7"> 物理</label>
+                        <label><input type="radio" name="subject" value="8"> 化学</label>
+                        <label><input type="radio" name="subject" value="9"> 生物</label>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -56,7 +83,7 @@
                     <div class="radio">
                         <label><input type="radio" id="type" name="type" value="1" checked> 单选</label>
                         <label><input type="radio" name="type" value="2"> 多选</label>
-                        <label><input type="radio" name="type" value="3"> 判断</label>
+                        <%--<label><input type="radio" name="type" value="3"> 判断</label>--%>
                         <label><input type="radio" name="type" value="4"> 填空</label>
                         <label><input type="radio" name="type" value="5"> 问答</label>
                     </div>
@@ -116,15 +143,15 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="rightJudge" class="col-sm-2 control-label">判断</label>
-                <div class="col-sm-10">
-                    <div class="checkbox">
-                        <label><input type="radio" id="rightJudge" name="rightJudge" value="true"> 正确</label>
-                        <label><input type="radio" name="rightJudge" value="false"> 错误</label>
-                    </div>
-                </div>
-            </div>
+            <%--<div class="form-group">--%>
+                <%--<label for="rightJudge" class="col-sm-2 control-label">判断</label>--%>
+                <%--<div class="col-sm-10">--%>
+                    <%--<div class="checkbox">--%>
+                        <%--<label><input type="radio" id="rightJudge" name="rightJudge" value="true"> 正确</label>--%>
+                        <%--<label><input type="radio" name="rightJudge" value="false"> 错误</label>--%>
+                    <%--</div>--%>
+                <%--</div>--%>
+            <%--</div>--%>
             <div class="form-group">
                 <label for="rightFilling" class="col-sm-2 control-label" data-toggle="tooltip" data-placement="top" title="填空题目前仅支持一个空">填空<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></label>
                 <div class="col-sm-10">

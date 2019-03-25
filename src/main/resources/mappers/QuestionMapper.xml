@@ -7,6 +7,7 @@
         <result column="id" property="id"/>
         <result column="chapter" property="chapter"/>
         <result column="section" property="section"/>
+        <result column="section" property="section"/>
         <result column="level" property="level"/>
         <result column="body" property="body"/>
         <result column="type" property="type"/>
@@ -22,10 +23,10 @@
         <result column="right_essay" property="rightEssay"/>
     </resultMap>
     <sql id="base_column">
-        id, chapter, section, level, body, type, option_num, option_a, option_b, option_c, option_d, option_e, right_option, right_judge, right_filling, right_essay
+        id, chapter, section, subject, level, body, type, option_num, option_a, option_b, option_c, option_d, option_e, right_option, right_judge, right_filling, right_essay
     </sql>
     <sql id="base_column_noid">
-        chapter, section, level, body, type, option_num, option_a, option_b, option_c, option_d, option_e, right_option, right_judge, right_filling, right_essay
+        chapter, section, subject, level, body, type, option_num, option_a, option_b, option_c, option_d, option_e, right_option, right_judge, right_filling, right_essay
     </sql>
     <select id="selectQuestionById" resultMap="questionMap">
         select <include refid="base_column"/> from question WHERE id=#{id};
@@ -42,10 +43,21 @@
             <foreach collection="level" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
         </if>;
     </select>
+    <select id="selectQuestionsByChapterSectionSubjectLevelType" resultMap="questionMap">
+        select <include refid="base_column"/> from question WHERE
+        <if test="chapter != null and chapter != ''">chapter=#{chapter} and </if>
+        <if test="section != null and section != ''">section=#{section} and </if>
+        <if test="subject != null and subject != ''">subject=#{subject} and </if>
+        type=#{type}
+        <if test="level != null">and level IN
+            <foreach collection="level" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+        </if>;
+    </select>
     <insert id="insertQuestion" parameterType="com.papergen.domain.Question" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         insert into question(<include refid="base_column_noid"/>)VALUES(
         #{chapter},
         #{section},
+        #{subject},
         #{level},
         #{body},
         #{type},
@@ -65,6 +77,7 @@
         UPDATE question set
         chapter=#{chapter},
         section=#{section},
+        subject=#{subject},
         level=#{level},
         body=#{body},
         type=#{type},

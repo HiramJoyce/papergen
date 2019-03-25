@@ -20,4 +20,6 @@ public interface QuestionService {
     List<Question> getQuestionsByChapterSectionLevelType(String chapter, String section, List<String> level, int i);
 
     List<Question> batchImport(MultipartFile excelFile) throws IOException;
+
+    List<Question> getQuestionsByChapterSectionSubjectLevelType(String chapter, String section, String subject, List<String> level, int i);
 }

@@ -12,8 +12,10 @@
 <body>
 <div>
     <div class="container" style="padding: 20px;">
-        <a href="${ctx}/addPaper">新增试卷</a>
-        <a href="javascript:" onclick="deletePaper()">删除</a>
+        <div style="margin-bottom: 10px;">
+            <button class="btn btn-success" onclick="window.location.href='${ctx}/addPaper'">新增试卷</button>
+            <button class="btn btn-danger" type="button" onclick="deletePaper()">删除</button>
+        </div>
         <form action="${ctx}/deletePaper" method="post">
             <table class="table table-bordered">
                 <thead>
@@ -21,6 +23,9 @@
                     <th class="num"></th>
                     <th class="name">ID</th>
                     <th class="name">名称</th>
+                    <th class="name">年段</th>
+                    <th class="name">年级</th>
+                    <th class="name">科目</th>
                     <th class="node">难度</th>
                     <th class="process">时长</th>
                     <th class="operate">操作</th>
@@ -32,6 +37,31 @@
                         <td><input type="checkbox" name="id" value="${paper.id}"/></td>
                         <td>${paper.id}</td>
                         <td>${paper.title}</td>
+                        <td>
+                            <c:if test="${paper.chapter==1}">小学</c:if>
+                            <c:if test="${paper.chapter==2}">初中</c:if>
+                            <c:if test="${paper.chapter==3}">高中</c:if>
+                        </td>
+                        <td>
+                            <c:if test="${paper.section==1}">一</c:if>
+                            <c:if test="${paper.section==2}">二</c:if>
+                            <c:if test="${paper.section==3}">三</c:if>
+                            <c:if test="${paper.section==4}">四</c:if>
+                            <c:if test="${paper.section==5}">五</c:if>
+                            <c:if test="${paper.section==6}">六</c:if>
+                            年级
+                        </td>
+                        <td>
+                            <c:if test="${paper.subject==1}">语文</c:if>
+                            <c:if test="${paper.subject==2}">数学</c:if>
+                            <c:if test="${paper.subject==3}">外语</c:if>
+                            <c:if test="${paper.subject==4}">政治</c:if>
+                            <c:if test="${paper.subject==5}">历史</c:if>
+                            <c:if test="${paper.subject==6}">地理</c:if>
+                            <c:if test="${paper.subject==7}">物理</c:if>
+                            <c:if test="${paper.subject==8}">化学</c:if>
+                            <c:if test="${paper.subject==9}">生物</c:if>
+                        </td>
                         <td>
                             <c:if test="${paper.level==1}">简单</c:if>
                             <c:if test="${paper.level==2}">一般</c:if>

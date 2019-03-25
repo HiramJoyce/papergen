@@ -38,13 +38,16 @@
                         %>
                         <div class="btn-group" role="group" aria-label="...">
                             <a type="button" class="btn btn-link navbar-btn" data-toggle="modal" data-target="#myModal">登录</a>
-                            <a type="button" class="btn btn-link navbar-btn" data-toggle="modal" data-target="#myModal2">注册</a>
+                            <a type="button" class="btn btn-link navbar-btn" data-toggle="modal"
+                               data-target="#myModal2">注册</a>
                         </div>
                         <%
                         } else {
                         %>
                         <div class="btn-group" role="group" aria-label="...">
-                            <a href="${ctx}/" type="button" class="btn btn-link navbar-btn"><%=session.getAttribute("realName")%></a>
+                            <a href="${ctx}/studentInfo" type="button"
+                               class="btn btn-link navbar-btn"><%=session.getAttribute("realName")%>
+                            </a>
                             <a href="${ctx}/logout" class="btn btn-link navbar-btn">注销</a>
                         </div>
                         <%
@@ -64,33 +67,67 @@
             </div>
         </c:if>
         <h2>近期测试</h2>
-        <table class="table table-hover" style="width: 500px;">
-            <tr>
-                <td>标题</td>
-                <td>发布日期</td>
-                <td>难度等级</td>
-                <td></td>
-            </tr>
-            <c:forEach items="${papers}" var="paper">
+        <c:if test="${papers == null}">
+            <h3>登录后查看</h3>
+        </c:if>
+        <c:if test="${papers != null}">
+            <table class="table table-hover" style="width: 800px;">
                 <tr>
-                    <td>${paper.title}</td>
-                    <td>${paper.createTime}</td>
-                    <td>
-                        <c:if test="${paper.level==1}">简单</c:if>
-                        <c:if test="${paper.level==2}">一般</c:if>
-                        <c:if test="${paper.level==3}">中等</c:if>
-                        <c:if test="${paper.level==4}">较难</c:if>
-                        <c:if test="${paper.level==5}">巨难</c:if>
-                    </td>
-                    <td>
-                        <a href="${ctx}/takePaper?id=${paper.id}">参加考试</a>
-                    </td>
+                    <td>标题</td>
+                    <td>年段</td>
+                    <td>年级</td>
+                    <td>科目</td>
+                    <td>发布日期</td>
+                    <td>难度等级</td>
+                    <td></td>
                 </tr>
-            </c:forEach>
-            </tr>
-        </table>
+                <c:forEach items="${papers}" var="paper">
+                    <tr>
+                        <td>${paper.title}</td>
+                        <td>
+                            <c:if test="${paper.chapter==1}">小学</c:if>
+                            <c:if test="${paper.chapter==2}">初中</c:if>
+                            <c:if test="${paper.chapter==3}">高中</c:if>
+                        </td>
+                        <td>
+                            <c:if test="${paper.section==1}">一</c:if>
+                            <c:if test="${paper.section==2}">二</c:if>
+                            <c:if test="${paper.section==3}">三</c:if>
+                            <c:if test="${paper.section==4}">四</c:if>
+                            <c:if test="${paper.section==5}">五</c:if>
+                            <c:if test="${paper.section==6}">六</c:if>
+                            年级
+                        </td>
+                        <td>
+                            <c:if test="${paper.subject==1}">语文</c:if>
+                            <c:if test="${paper.subject==2}">数学</c:if>
+                            <c:if test="${paper.subject==3}">外语</c:if>
+                            <c:if test="${paper.subject==4}">政治</c:if>
+                            <c:if test="${paper.subject==5}">历史</c:if>
+                            <c:if test="${paper.subject==6}">地理</c:if>
+                            <c:if test="${paper.subject==7}">物理</c:if>
+                            <c:if test="${paper.subject==8}">化学</c:if>
+                            <c:if test="${paper.subject==9}">生物</c:if>
+                        </td>
+                        <td>${paper.createTime}</td>
+                        <td>
+                            <c:if test="${paper.level==1}">简单</c:if>
+                            <c:if test="${paper.level==2}">一般</c:if>
+                            <c:if test="${paper.level==3}">中等</c:if>
+                            <c:if test="${paper.level==4}">较难</c:if>
+                            <c:if test="${paper.level==5}">巨难</c:if>
+                        </td>
+                        <td>
+                            <a href="${ctx}/takePaper?id=${paper.id}">参加考试</a>
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tr>
+            </table>
+        </c:if>
     </div>
-    <div style="position: absolute; bottom: 0; text-align: center; width: 100%;"><a href="${ctx}/admin/loginPage">管理员登录</a>
+    <div style="position: absolute; bottom: 0; text-align: center; width: 100%;"><a
+            href="${ctx}/admin/loginPage">管理员登录</a>
     </div>
 </div>
 <!-- Modal -->
@@ -135,6 +172,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
+                        <label for="studentNum">学号</label>
+                        <input type="text" name="studentNum" class="form-control" id="studentNum" placeholder="">
+                    </div>
+                    <div class="form-group">
                         <label for="userName2">用户名</label>
                         <input type="text" name="userName" class="form-control" id="userName2" placeholder="">
                     </div>
@@ -149,6 +190,29 @@
                     <div class="form-group">
                         <label for="password22">确认密码</label>
                         <input type="password" name="password2" class="form-control" id="password22" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label for="chapter">年段</label>
+                        <div class="checkbox">
+                            <select id="chapter" class="form-control" name="chapter">
+                                <option value="1" selected>小学</option>
+                                <option value="2">初中</option>
+                                <option value="3">高中</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="section">年级</label>
+                        <div class="checkbox">
+                            <select id="section" class="form-control" name="section">
+                                <option value="1" selected>1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -186,6 +250,7 @@
         }
         return true;
     }
+
     function loginCheck() {
         if ($("#userName").val() === null || $("#userName").val() === '' || $("#password").val() === null || $("#password").val() === '') {
             return false

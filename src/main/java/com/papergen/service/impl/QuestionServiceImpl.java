@@ -3,7 +3,6 @@ package com.papergen.service.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
@@ -83,6 +82,9 @@ public class QuestionServiceImpl implements QuestionService {
             Cell sectionCell = row.getCell(1);
             sectionCell.setCellType(CellType.NUMERIC);
             question.setSection((int)Math.round(sectionCell.getNumericCellValue()));
+            Cell subjectCell = row.getCell(1);
+            sectionCell.setCellType(CellType.NUMERIC);
+            question.setSubject((int)Math.round(subjectCell.getNumericCellValue()));
             Cell levelCell = row.getCell(2);
             levelCell.setCellType(CellType.NUMERIC);
             question.setLevel((int)Math.round(levelCell.getNumericCellValue()));
@@ -126,6 +128,11 @@ public class QuestionServiceImpl implements QuestionService {
             System.out.println(question);
         }
         return questions;
+    }
+
+    @Override
+    public List<Question> getQuestionsByChapterSectionSubjectLevelType(String chapter, String section, String subject, List<String> level, int type) {
+        return questionDao.selectQuestionsByChapterSectionSubjectLevelType(chapter, section, subject, level, type);
     }
 
     public static void main(String[] args) {

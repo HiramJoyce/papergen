@@ -37,8 +37,9 @@
                 <tr>
                     <th class="num"></th>
                     <th class="name">ID</th>
-                    <th class="name">章</th>
-                    <th class="operate">节</th>
+                    <th class="name">年段</th>
+                    <th class="operate">年级</th>
+                    <th class="operate">科目</th>
                     <th class="node">难度</th>
                     <th class="process">题干</th>
                     <th class="process">类型</th>
@@ -50,8 +51,31 @@
                     <tr align="center">
                         <td><input type="checkbox" name="id" value="${question.id}"/></td>
                         <td>${question.id}</td>
-                        <td>${question.chapter}</td>
-                        <td>${question.section}</td>
+                        <td>
+                            <c:if test="${question.chapter==1}">小学</c:if>
+                            <c:if test="${question.chapter==2}">初中</c:if>
+                            <c:if test="${question.chapter==3}">高中</c:if>
+                        </td>
+                        <td>
+                            <c:if test="${question.section==1}">一</c:if>
+                            <c:if test="${question.section==2}">二</c:if>
+                            <c:if test="${question.section==3}">三</c:if>
+                            <c:if test="${question.section==4}">四</c:if>
+                            <c:if test="${question.section==5}">五</c:if>
+                            <c:if test="${question.section==6}">六</c:if>
+                            年级
+                        </td>
+                        <td>
+                            <c:if test="${question.subject==1}">语文</c:if>
+                            <c:if test="${question.subject==2}">数学</c:if>
+                            <c:if test="${question.subject==3}">外语</c:if>
+                            <c:if test="${question.subject==4}">政治</c:if>
+                            <c:if test="${question.subject==5}">历史</c:if>
+                            <c:if test="${question.subject==6}">地理</c:if>
+                            <c:if test="${question.subject==7}">物理</c:if>
+                            <c:if test="${question.subject==8}">化学</c:if>
+                            <c:if test="${question.subject==9}">生物</c:if>
+                        </td>
                         <td>
                             <c:if test="${question.level==1}">简单</c:if>
                             <c:if test="${question.level==2}">一般</c:if>

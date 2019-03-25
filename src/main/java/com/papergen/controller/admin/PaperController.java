@@ -25,464 +25,441 @@ import java.util.List;
 @Controller
 public class PaperController {
 
-	@Autowired
-	private PaperService paperService;
-	@Autowired
-	private QuestionService questionService;
-	@Autowired
-	private StudentService studentService;
+    @Autowired
+    private PaperService paperService;
+    @Autowired
+    private QuestionService questionService;
+    @Autowired
+    private StudentService studentService;
 
-	@RequestMapping("/papersPage")
-	public String toQuestionPage(Model model, HttpServletRequest request) {
+    @RequestMapping("/papersPage")
+    public String toQuestionPage(Model model, HttpServletRequest request) {
         if (request.getSession().getAttribute("role") == null || !request.getSession().getAttribute("role").equals("admin")) {
             return "404";
         }
-		List<Paper> papers = paperService.getAllPapers();
-		model.addAttribute("papers", papers);
-		System.out.println(papers);
-		return "admin/papers";
-	}
+        List<Paper> papers = paperService.getAllPapers();
+        model.addAttribute("papers", papers);
+        System.out.println(papers);
+        return "admin/papers";
+    }
 
-	@RequestMapping("/addPaper")
-	public String toAddPaper(Model model, HttpServletRequest request) {
+    @RequestMapping("/addPaper")
+    public String toAddPaper(Model model, HttpServletRequest request) {
         if (request.getSession().getAttribute("role") == null || !request.getSession().getAttribute("role").equals("admin")) {
             return "404";
         }
-		List<Question> questions = questionService.getAllQuestions();
-		model.addAttribute("questions", questions);
-		return "admin/paperAdd";
-	}
+        List<Question> questions = questionService.getAllQuestions();
+        model.addAttribute("questions", questions);
+        return "admin/paperAdd";
+    }
 
-	@RequestMapping("/addPaperAuto")
-	public String addPaperAuto(String radioLevel, String multipleLevel, String judgeLevel, String fillingLevel,
-			String essayLevel, Model model, HttpServletRequest request) {
-		String chapterSectionsStr = request.getParameter("chapter");
-		String title = request.getParameter("title");
-		if (title == null || title.length() <= 0) {
-			model.addAttribute("error", "标题不能为空");
-			return "admin/paperAdd";
-		}
-		int radioNum = Integer.parseInt(request.getParameter("radioNum"));
-		int multipleNum = Integer.parseInt(request.getParameter("multipleNum"));
-		int judgeNum = Integer.parseInt(request.getParameter("judgeNum"));
-		int fillingNum = Integer.parseInt(request.getParameter("fillingNum"));
-		int essayNum = Integer.parseInt(request.getParameter("essayNum"));
-		List<Question> radioQuestionsList = new ArrayList<>();
-		List<Question> multipleQuestionsList = new ArrayList<>();
-		List<Question> judgeQuestionsList = new ArrayList<>();
-		List<Question> fillingQuestionsList = new ArrayList<>();
-		List<Question> essayQuestionsList = new ArrayList<>();
-		if (chapterSectionsStr == null || chapterSectionsStr.equals("") || chapterSectionsStr.equals("all")) {
-            System.out.println("-> 生成试卷未填写章节，默认全选");
-			radioQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(null, null,
-					Arrays.asList(radioLevel.split(",")), 1));
-			multipleQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(null, null,
-					Arrays.asList(multipleLevel.split(",")), 2));
-            System.out.println(multipleQuestionsList);
-            System.out.println("multipleQuestionsList.size() = " +multipleQuestionsList.size());
-			judgeQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(null, null,
-					Arrays.asList(judgeLevel.split(",")), 3));
-			fillingQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(null, null,
-					Arrays.asList(fillingLevel.split(",")), 4));
-			essayQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(null, null,
-					Arrays.asList(essayLevel.split(",")), 5));
-		} else {
-			String[] chapterSections = chapterSectionsStr.split(",");
-			for (String chapterSection : chapterSections) {
-				if (chapterSection.split("-").length > 1) {
-					String chapter = chapterSection.split("-")[0];
-					String section = chapterSection.split("-")[1];
-					System.out.println(chapter + " " + section + " " + radioLevel);
-					radioQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(chapter, section,
-							Arrays.asList(radioLevel.split(",")), 1));
-					multipleQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(chapter, section,
-							Arrays.asList(multipleLevel.split(",")), 2));
-					judgeQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(chapter, section,
-							Arrays.asList(judgeLevel.split(",")), 3));
-					fillingQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(chapter, section,
-							Arrays.asList(fillingLevel.split(",")), 4));
-					essayQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(chapter, section,
-							Arrays.asList(essayLevel.split(",")), 5));
-				} else {
-					String chapter = chapterSection.split("-")[0];
-					radioQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(chapter, null,
-							Arrays.asList(radioLevel.split(",")), 1));
-					multipleQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(chapter, null,
-							Arrays.asList(multipleLevel.split(",")), 2));
-					judgeQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(chapter, null,
-							Arrays.asList(judgeLevel.split(",")), 3));
-					fillingQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(chapter, null,
-							Arrays.asList(fillingLevel.split(",")), 4));
-					essayQuestionsList.addAll(questionService.getQuestionsByChapterSectionLevelType(chapter, null,
-							Arrays.asList(essayLevel.split(",")), 5));
-				}
-			}
-		}
-		Paper paper = new Paper();
-		paper.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-		paper.setTitle(title);
-		paper.setTime(request.getParameter("time"));
-		paper.setLevel(Integer.parseInt(request.getParameter("paperLevel")));
-		List<Question> radioQuestions = new ArrayList<>();
-		List<Question> multipleQuestions = new ArrayList<>();
-		List<Question> judgeQuestions = new ArrayList<>();
-		List<Question> fillingQuestions = new ArrayList<>();
-		List<Question> essayQuestions = new ArrayList<>();
-		// 根据数量随机抽取
-		if (radioQuestionsList.size() < radioNum) {
-			model.addAttribute("error", "题库【单选题】数量不足");
-			return "admin/paperAdd";
-		} else if (radioQuestionsList.size() == radioNum) {
-			StringBuilder radioIds = new StringBuilder();
-			radioQuestionsList.forEach((question) -> radioIds.append(question.getId()).append(","));
-			paper.setRadioIds(radioIds.length() > 0 ? radioIds.toString().substring(0, radioIds.length() - 1) : null);
-			model.addAttribute("radioQuestions", radioQuestionsList);
-		} else {
-			makeRandom(0, radioQuestionsList.size(), radioNum)
-					.forEach((index) -> radioQuestions.add(radioQuestionsList.get(index)));
-			StringBuilder radioIds = new StringBuilder();
-			radioQuestions.forEach((question) -> radioIds.append(question.getId()).append(","));
-			paper.setRadioIds(radioIds.length() > 0 ? radioIds.toString().substring(0, radioIds.length() - 1) : null);
-			model.addAttribute("radioQuestions", radioQuestions);
-		}
-		paper.setRadioNum(radioNum);
-		if (multipleQuestionsList.size() < multipleNum) {
-			model.addAttribute("error", "题库【多选题】数量不足");
-			return "admin/paperAdd";
-		} else if (multipleQuestionsList.size() == multipleNum) {
-			StringBuilder multipleIds = new StringBuilder();
-			multipleQuestionsList.forEach((question) -> multipleIds.append(question.getId()).append(","));
+    @RequestMapping("/addPaperAuto")
+    public String addPaperAuto(String radioLevel, String multipleLevel, String fillingLevel,
+                               String essayLevel, Model model, HttpServletRequest request) {
+        String chapter = request.getParameter("chapter");
+        String section = request.getParameter("section");
+        String subject = request.getParameter("subject");
+        String title = request.getParameter("title");
+        if (title == null || title.length() <= 0) {
+            model.addAttribute("error", "标题不能为空");
+            return "admin/paperAdd";
+        }
+        int radioNum = Integer.parseInt(request.getParameter("radioNum"));
+        int multipleNum = Integer.parseInt(request.getParameter("multipleNum"));
+//		int judgeNum = Integer.parseInt(request.getParameter("judgeNum"));
+        int fillingNum = Integer.parseInt(request.getParameter("fillingNum"));
+        int essayNum = Integer.parseInt(request.getParameter("essayNum"));
+        List<Question> radioQuestionsList = new ArrayList<>();
+        List<Question> multipleQuestionsList = new ArrayList<>();
+//		List<Question> judgeQuestionsList = new ArrayList<>();
+        List<Question> fillingQuestionsList = new ArrayList<>();
+        List<Question> essayQuestionsList = new ArrayList<>();
+        System.out.println(chapter + " " + section + " " + radioLevel);
+        radioQuestionsList.addAll(questionService.getQuestionsByChapterSectionSubjectLevelType(chapter, section, subject,
+                Arrays.asList(radioLevel.split(",")), 1));
+        multipleQuestionsList.addAll(questionService.getQuestionsByChapterSectionSubjectLevelType(chapter, section, subject,
+                Arrays.asList(multipleLevel.split(",")), 2));
+//					judgeQuestionsList.addAll(questionService.getQuestionsByChapterSectionSubjectLevelType(chapter, section, subject,
+//							Arrays.asList(judgeLevel.split(",")), 3));
+        fillingQuestionsList.addAll(questionService.getQuestionsByChapterSectionSubjectLevelType(chapter, section, subject,
+                Arrays.asList(fillingLevel.split(",")), 4));
+        essayQuestionsList.addAll(questionService.getQuestionsByChapterSectionSubjectLevelType(chapter, section, subject,
+                Arrays.asList(essayLevel.split(",")), 5));
+
+
+        Paper paper = new Paper();
+        paper.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+        paper.setTitle(title);
+        paper.setTime(request.getParameter("time"));
+        paper.setChapter(Integer.parseInt(chapter));
+        paper.setSection(Integer.parseInt(section));
+        paper.setSubject(Integer.parseInt(subject));
+        paper.setLevel(Integer.parseInt(request.getParameter("paperLevel")));
+        List<Question> radioQuestions = new ArrayList<>();
+        List<Question> multipleQuestions = new ArrayList<>();
+        //		List<Question> judgeQuestions = new ArrayList<>();
+        List<Question> fillingQuestions = new ArrayList<>();
+        List<Question> essayQuestions = new ArrayList<>();
+        // 根据数量随机抽取
+        if (radioQuestionsList.size() < radioNum) {
+            model.addAttribute("error", "题库【单选题】数量不足");
+            return "admin/paperAdd";
+        } else if (radioQuestionsList.size() == radioNum) {
+            StringBuilder radioIds = new StringBuilder();
+            radioQuestionsList.forEach((question) -> radioIds.append(question.getId()).append(","));
+            paper.setRadioIds(radioIds.length() > 0 ? radioIds.toString().substring(0, radioIds.length() - 1) : null);
+            model.addAttribute("radioQuestions", radioQuestionsList);
+        } else {
+            makeRandom(0, radioQuestionsList.size(), radioNum)
+                    .forEach((index) -> radioQuestions.add(radioQuestionsList.get(index)));
+            StringBuilder radioIds = new StringBuilder();
+            radioQuestions.forEach((question) -> radioIds.append(question.getId()).append(","));
+            paper.setRadioIds(radioIds.length() > 0 ? radioIds.toString().substring(0, radioIds.length() - 1) : null);
+            model.addAttribute("radioQuestions", radioQuestions);
+        }
+        paper.setRadioNum(radioNum);
+        if (multipleQuestionsList.size() < multipleNum) {
+            model.addAttribute("error", "题库【多选题】数量不足");
+            return "admin/paperAdd";
+        } else if (multipleQuestionsList.size() == multipleNum) {
+            StringBuilder multipleIds = new StringBuilder();
+            multipleQuestionsList.forEach((question) -> multipleIds.append(question.getId()).append(","));
             System.out.println("-> 多选 id");
-			paper.setMultipleIds(
-					multipleIds.length() > 0 ? multipleIds.toString().substring(0, multipleIds.length() - 1) : null);
-			model.addAttribute("multipleQuestions", multipleQuestionsList);
-		} else {
-			makeRandom(0, multipleQuestionsList.size(), multipleNum)
-					.forEach((index) -> multipleQuestions.add(multipleQuestionsList.get(index)));
-			StringBuilder multipleIds = new StringBuilder();
-			multipleQuestions.forEach((question) -> multipleIds.append(question.getId()).append(","));
-			paper.setMultipleIds(
-					multipleIds.length() > 0 ? multipleIds.toString().substring(0, multipleIds.length() - 1) : null);
-			model.addAttribute("multipleQuestions", multipleQuestions);
-		}
-		paper.setMultipleNum(multipleNum);
-		if (judgeQuestionsList.size() < judgeNum) {
-			model.addAttribute("error", "题库【判断题】数量不足");
-			return "admin/paperAdd";
-		} else if (judgeQuestionsList.size() == judgeNum) {
-			StringBuilder judgeIds = new StringBuilder();
-			judgeQuestionsList.forEach((question) -> judgeIds.append(question.getId()).append(","));
-			paper.setJudgeIds(judgeIds.length() > 0 ? judgeIds.toString().substring(0, judgeIds.length() - 1) : null);
-			model.addAttribute("judgeQuestions", judgeQuestionsList);
-		} else {
-			makeRandom(0, judgeQuestionsList.size(), judgeNum)
-					.forEach((index) -> judgeQuestions.add(judgeQuestionsList.get(index)));
-			StringBuilder judgeIds = new StringBuilder();
-			judgeQuestions.forEach((question) -> judgeIds.append(question.getId()).append(","));
-			paper.setJudgeIds(judgeIds.length() > 0 ? judgeIds.toString().substring(0, judgeIds.length() - 1) : null);
-			model.addAttribute("judgeQuestions", judgeQuestions);
-		}
-		paper.setJudgeNum(judgeNum);
-		if (fillingQuestionsList.size() < fillingNum) {
-			model.addAttribute("error", "题库【填空题】数量不足");
-			return "admin/paperAdd";
-		} else if (fillingQuestionsList.size() == fillingNum) {
-			StringBuilder fillingIds = new StringBuilder();
-			fillingQuestionsList.forEach((question) -> fillingIds.append(question.getId()).append(","));
-			paper.setFillingIds(
-					fillingIds.length() > 0 ? fillingIds.toString().substring(0, fillingIds.length() - 1) : null);
-			model.addAttribute("fillingQuestions", fillingQuestionsList);
-		} else {
-			makeRandom(0, fillingQuestionsList.size(), fillingNum)
-					.forEach((index) -> fillingQuestions.add(fillingQuestionsList.get(index)));
-			StringBuilder fillingIds = new StringBuilder();
-			fillingQuestions.forEach((question) -> fillingIds.append(question.getId()).append(","));
-			paper.setFillingIds(
-					fillingIds.length() > 0 ? fillingIds.toString().substring(0, fillingIds.length() - 1) : null);
-			model.addAttribute("fillingQuestions", fillingQuestions);
-		}
-		paper.setFillingNum(fillingNum);
-		if (essayQuestionsList.size() < essayNum) {
-			model.addAttribute("error", "题库【问答题】数量不足");
-			return "admin/paperAdd";
-		} else if (essayQuestionsList.size() == essayNum) {
-			StringBuilder essayIds = new StringBuilder();
-			essayQuestionsList.forEach((question) -> essayIds.append(question.getId()).append(","));
-			paper.setEssayIds(essayIds.length() > 0 ? essayIds.toString().substring(0, essayIds.length() - 1) : null);
-			model.addAttribute("essayQuestions", essayQuestionsList);
-		} else {
-			makeRandom(0, essayQuestionsList.size(), essayNum)
-					.forEach((index) -> essayQuestions.add(essayQuestionsList.get(index)));
-			StringBuilder essayIds = new StringBuilder();
-			essayQuestions.forEach((question) -> essayIds.append(question.getId()).append(","));
-			paper.setEssayIds(essayIds.length() > 0 ? essayIds.toString().substring(0, essayIds.length() - 1) : null);
-			model.addAttribute("essayQuestions", essayQuestions);
-		}
-		paper.setEssayNum(essayNum);
-		paper.setState("1");
-		paper.setCreateTime(new Date());
-		System.out.println(paper);
-		model.addAttribute("paper", paper);
-		paperService.addPaper(paper);
-		return "admin/paper";
-	}
+            paper.setMultipleIds(
+                    multipleIds.length() > 0 ? multipleIds.toString().substring(0, multipleIds.length() - 1) : null);
+            model.addAttribute("multipleQuestions", multipleQuestionsList);
+        } else {
+            makeRandom(0, multipleQuestionsList.size(), multipleNum)
+                    .forEach((index) -> multipleQuestions.add(multipleQuestionsList.get(index)));
+            StringBuilder multipleIds = new StringBuilder();
+            multipleQuestions.forEach((question) -> multipleIds.append(question.getId()).append(","));
+            paper.setMultipleIds(
+                    multipleIds.length() > 0 ? multipleIds.toString().substring(0, multipleIds.length() - 1) : null);
+            model.addAttribute("multipleQuestions", multipleQuestions);
+        }
+        paper.setMultipleNum(multipleNum);
+//		if (judgeQuestionsList.size() < judgeNum) {
+//			model.addAttribute("error", "题库【判断题】数量不足");
+//			return "admin/paperAdd";
+//		} else if (judgeQuestionsList.size() == judgeNum) {
+//			StringBuilder judgeIds = new StringBuilder();
+//			judgeQuestionsList.forEach((question) -> judgeIds.append(question.getId()).append(","));
+//			paper.setJudgeIds(judgeIds.length() > 0 ? judgeIds.toString().substring(0, judgeIds.length() - 1) : null);
+//			model.addAttribute("judgeQuestions", judgeQuestionsList);
+//		} else {
+//			makeRandom(0, judgeQuestionsList.size(), judgeNum)
+//					.forEach((index) -> judgeQuestions.add(judgeQuestionsList.get(index)));
+//			StringBuilder judgeIds = new StringBuilder();
+//			judgeQuestions.forEach((question) -> judgeIds.append(question.getId()).append(","));
+//			paper.setJudgeIds(judgeIds.length() > 0 ? judgeIds.toString().substring(0, judgeIds.length() - 1) : null);
+//			model.addAttribute("judgeQuestions", judgeQuestions);
+//		}
+//		paper.setJudgeNum(judgeNum);
+        if (fillingQuestionsList.size() < fillingNum) {
+            model.addAttribute("error", "题库【填空题】数量不足");
+            return "admin/paperAdd";
+        } else if (fillingQuestionsList.size() == fillingNum) {
+            StringBuilder fillingIds = new StringBuilder();
+            fillingQuestionsList.forEach((question) -> fillingIds.append(question.getId()).append(","));
+            paper.setFillingIds(
+                    fillingIds.length() > 0 ? fillingIds.toString().substring(0, fillingIds.length() - 1) : null);
+            model.addAttribute("fillingQuestions", fillingQuestionsList);
+        } else {
+            makeRandom(0, fillingQuestionsList.size(), fillingNum)
+                    .forEach((index) -> fillingQuestions.add(fillingQuestionsList.get(index)));
+            StringBuilder fillingIds = new StringBuilder();
+            fillingQuestions.forEach((question) -> fillingIds.append(question.getId()).append(","));
+            paper.setFillingIds(
+                    fillingIds.length() > 0 ? fillingIds.toString().substring(0, fillingIds.length() - 1) : null);
+            model.addAttribute("fillingQuestions", fillingQuestions);
+        }
+        paper.setFillingNum(fillingNum);
+        if (essayQuestionsList.size() < essayNum) {
+            model.addAttribute("error", "题库【问答题】数量不足");
+            return "admin/paperAdd";
+        } else if (essayQuestionsList.size() == essayNum) {
+            StringBuilder essayIds = new StringBuilder();
+            essayQuestionsList.forEach((question) -> essayIds.append(question.getId()).append(","));
+            paper.setEssayIds(essayIds.length() > 0 ? essayIds.toString().substring(0, essayIds.length() - 1) : null);
+            model.addAttribute("essayQuestions", essayQuestionsList);
+        } else {
+            makeRandom(0, essayQuestionsList.size(), essayNum)
+                    .forEach((index) -> essayQuestions.add(essayQuestionsList.get(index)));
+            StringBuilder essayIds = new StringBuilder();
+            essayQuestions.forEach((question) -> essayIds.append(question.getId()).append(","));
+            paper.setEssayIds(essayIds.length() > 0 ? essayIds.toString().substring(0, essayIds.length() - 1) : null);
+            model.addAttribute("essayQuestions", essayQuestions);
+        }
+        paper.setEssayNum(essayNum);
+        paper.setState("1");
+        paper.setCreateTime(new
 
-	// 从x-y中的数中随机找出num个不同的数，返回给integer的动态数组中
-	private ArrayList<Integer> makeRandom(int x, int y, int num) {
-		// 创建一个integer的动态数组
-		ArrayList<Integer> a = new ArrayList<Integer>();
-		int index = 0;
-		// 往数组里面逐一加取到不重复的元素
-		while (index < num) {
-			// 产生x-y的随机数
-			Random r = new Random();
-			int temp = r.nextInt(y - x) + x;
-			// 设置是否重复的标记变量为false
-			boolean flag = false;
-			for (int i = 0; i < index; i++) {
-				if (temp == a.get(i)) {
-					flag = true;
-					break;
-				}
-			}
-			if (flag == false) {
-				a.add(temp);
-				index++;
-			}
-		}
-		return a;
-	}
+                Date());
+        System.out.println(paper);
+        model.addAttribute("paper", paper);
+        paperService.addPaper(paper);
+        return "admin/paper";
+    }
 
-	@RequestMapping("/addPaperHandle")
-	public String addPaperHandle(String paperId, String title, String paperLevel, String time, String questionId,
-			Model model, HttpServletRequest request) {
-		System.out.println(title);
-		System.out.println(paperLevel);
-		System.out.println(time);
-		System.out.println(questionId);
-		System.out.println(paperId);
-		if (questionId != null) {
-			String ids[] = questionId.split(",");
-			int radioNum = 0;
-			List<String> radioIdsList = new ArrayList<>();
-			List<Question> radioQuestions = new ArrayList<>();
-			int multipleNum = 0;
-			List<String> multipleIdsList = new ArrayList<>();
-			List<Question> multipleQuestions = new ArrayList<>();
-			int judgeNum = 0;
-			List<String> judgeIdsList = new ArrayList<>();
-			List<Question> judgeQuestions = new ArrayList<>();
-			int fillingNum = 0;
-			List<String> fillingIdsList = new ArrayList<>();
-			List<Question> fillingQuestions = new ArrayList<>();
-			int essayNum = 0;
-			List<String> essayIdsList = new ArrayList<>();
-			List<Question> essayQuestions = new ArrayList<>();
-			Question question;
-			for (String id : ids) {
-				question = questionService.getQuestionById(id);
-				switch (question.getType()) {
-				case 1:
-					radioNum++;
-					radioIdsList.add(id);
-					radioQuestions.add(question);
-					break;
-				case 2:
-					multipleNum++;
-					multipleIdsList.add(id);
-					multipleQuestions.add(question);
-					break;
-				case 3:
-					judgeNum++;
-					judgeIdsList.add(id);
-					judgeQuestions.add(question);
-					break;
-				case 4:
-					fillingNum++;
-					fillingIdsList.add(id);
-					fillingQuestions.add(question);
-					break;
-				case 5:
-					essayNum++;
-					essayIdsList.add(id);
-					essayQuestions.add(question);
-					break;
-				}
-			}
-			Paper paper = new Paper();
-			paper.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-			paper.setTitle(title);
-			paper.setTime(time);
-			paper.setLevel(Integer.parseInt(paperLevel));
-			paper.setRadioNum(radioNum);
-			StringBuilder radioIds = new StringBuilder();
-			radioIdsList.forEach((id) -> radioIds.append(id).append(","));
-			paper.setRadioIds(radioIds.length() > 0 ? radioIds.toString().substring(0, radioIds.length() - 1) : null);
-			paper.setMultipleNum(multipleNum);
-			StringBuilder multipleIds = new StringBuilder();
-			multipleIdsList.forEach((id) -> multipleIds.append(id).append(","));
-			paper.setMultipleIds(
-					multipleIds.length() > 0 ? multipleIds.toString().substring(0, multipleIds.length() - 1) : null);
-			paper.setJudgeNum(judgeNum);
-			StringBuilder judgeIds = new StringBuilder();
-			judgeIdsList.forEach((id) -> judgeIds.append(id).append(","));
-			paper.setJudgeIds(judgeIds.length() > 0 ? judgeIds.toString().substring(0, judgeIds.length() - 1) : null);
-			paper.setFillingNum(fillingNum);
-			StringBuilder fillingIds = new StringBuilder();
-			fillingIdsList.forEach((id) -> fillingIds.append(id).append(","));
-			paper.setFillingIds(
-					fillingIds.length() > 0 ? fillingIds.toString().substring(0, fillingIds.length() - 1) : null);
-			paper.setEssayNum(essayNum);
-			StringBuilder essayIds = new StringBuilder();
-			essayIdsList.forEach((id) -> essayIds.append(id).append(","));
-			paper.setEssayIds(essayIds.length() > 0 ? essayIds.toString().substring(0, essayIds.length() - 1) : null);
-			paper.setState("1");
-			paper.setCreateTime(new Date());
-			System.out.println(paper);
-			model.addAttribute("paper", paper);
-			model.addAttribute("radioQuestions", radioQuestions);
-			model.addAttribute("multipleQuestions", multipleQuestions);
-			model.addAttribute("judgeQuestions", judgeQuestions);
-			model.addAttribute("fillingQuestions", fillingQuestions);
-			model.addAttribute("essayQuestions", essayQuestions);
-			if (paperId != null && !Objects.equals(paperId, "")) {
-				paper.setId(paperId);
-				paperService.updatePaper(paper);
-			} else {
-				paperService.addPaper(paper);
-			}
-		}
-		return "admin/paper";
-	}
+    // 从x-y中的数中随机找出num个不同的数，返回给integer的动态数组中
+    private ArrayList<Integer> makeRandom(int x, int y, int num) {
+        // 创建一个integer的动态数组
+        ArrayList<Integer> a = new ArrayList<Integer>();
+        int index = 0;
+        // 往数组里面逐一加取到不重复的元素
+        while (index < num) {
+            // 产生x-y的随机数
+            Random r = new Random();
+            int temp = r.nextInt(y - x) + x;
+            // 设置是否重复的标记变量为false
+            boolean flag = false;
+            for (int i = 0; i < index; i++) {
+                if (temp == a.get(i)) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag == false) {
+                a.add(temp);
+                index++;
+            }
+        }
+        return a;
+    }
 
-	@RequestMapping("/queryPaper")
-	public String queryQuestion(String id, Model model, HttpServletRequest request) throws UnsupportedEncodingException {
+    @RequestMapping("/addPaperHandle")
+    public String addPaperHandle(String paperId, String title, String chapter, String section, String subject, String paperLevel, String time, String questionId,
+                                 Model model, HttpServletRequest request) {
+        System.out.println(title);
+        System.out.println(paperLevel);
+        System.out.println(time);
+        System.out.println(questionId);
+        System.out.println(paperId);
+        if (questionId != null) {
+            String ids[] = questionId.split(",");
+            int radioNum = 0;
+            List<String> radioIdsList = new ArrayList<>();
+            List<Question> radioQuestions = new ArrayList<>();
+            int multipleNum = 0;
+            List<String> multipleIdsList = new ArrayList<>();
+            List<Question> multipleQuestions = new ArrayList<>();
+//            int judgeNum = 0;
+//            List<String> judgeIdsList = new ArrayList<>();
+//            List<Question> judgeQuestions = new ArrayList<>();
+            int fillingNum = 0;
+            List<String> fillingIdsList = new ArrayList<>();
+            List<Question> fillingQuestions = new ArrayList<>();
+            int essayNum = 0;
+            List<String> essayIdsList = new ArrayList<>();
+            List<Question> essayQuestions = new ArrayList<>();
+            Question question;
+            for (String id : ids) {
+                question = questionService.getQuestionById(id);
+                switch (question.getType()) {
+                    case 1:
+                        radioNum++;
+                        radioIdsList.add(id);
+                        radioQuestions.add(question);
+                        break;
+                    case 2:
+                        multipleNum++;
+                        multipleIdsList.add(id);
+                        multipleQuestions.add(question);
+                        break;
+//                    case 3:
+//                        judgeNum++;
+//                        judgeIdsList.add(id);
+//                        judgeQuestions.add(question);
+//                        break;
+                    case 4:
+                        fillingNum++;
+                        fillingIdsList.add(id);
+                        fillingQuestions.add(question);
+                        break;
+                    case 5:
+                        essayNum++;
+                        essayIdsList.add(id);
+                        essayQuestions.add(question);
+                        break;
+                }
+            }
+            Paper paper = new Paper();
+            paper.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+            paper.setTitle(title);
+            paper.setTime(time);
+            paper.setChapter(Integer.parseInt(chapter));
+            paper.setSection(Integer.parseInt(section));
+            paper.setSubject(Integer.parseInt(subject));
+            paper.setLevel(Integer.parseInt(paperLevel));
+            paper.setRadioNum(radioNum);
+            StringBuilder radioIds = new StringBuilder();
+            radioIdsList.forEach((id) -> radioIds.append(id).append(","));
+            paper.setRadioIds(radioIds.length() > 0 ? radioIds.toString().substring(0, radioIds.length() - 1) : null);
+            paper.setMultipleNum(multipleNum);
+            StringBuilder multipleIds = new StringBuilder();
+            multipleIdsList.forEach((id) -> multipleIds.append(id).append(","));
+            paper.setMultipleIds(
+                    multipleIds.length() > 0 ? multipleIds.toString().substring(0, multipleIds.length() - 1) : null);
+//            paper.setJudgeNum(judgeNum);
+//            StringBuilder judgeIds = new StringBuilder();
+//            judgeIdsList.forEach((id) -> judgeIds.append(id).append(","));
+//            paper.setJudgeIds(judgeIds.length() > 0 ? judgeIds.toString().substring(0, judgeIds.length() - 1) : null);
+            paper.setFillingNum(fillingNum);
+            StringBuilder fillingIds = new StringBuilder();
+            fillingIdsList.forEach((id) -> fillingIds.append(id).append(","));
+            paper.setFillingIds(
+                    fillingIds.length() > 0 ? fillingIds.toString().substring(0, fillingIds.length() - 1) : null);
+            paper.setEssayNum(essayNum);
+            StringBuilder essayIds = new StringBuilder();
+            essayIdsList.forEach((id) -> essayIds.append(id).append(","));
+            paper.setEssayIds(essayIds.length() > 0 ? essayIds.toString().substring(0, essayIds.length() - 1) : null);
+            paper.setState("1");
+            paper.setCreateTime(new Date());
+            System.out.println(paper);
+            model.addAttribute("paper", paper);
+            model.addAttribute("radioQuestions", radioQuestions);
+            model.addAttribute("multipleQuestions", multipleQuestions);
+//            model.addAttribute("judgeQuestions", judgeQuestions);
+            model.addAttribute("fillingQuestions", fillingQuestions);
+            model.addAttribute("essayQuestions", essayQuestions);
+            if (paperId != null && !Objects.equals(paperId, "")) {
+                paper.setId(paperId);
+                paperService.updatePaper(paper);
+            } else {
+                paperService.addPaper(paper);
+            }
+        }
+        return "admin/paper";
+    }
+
+    @RequestMapping("/queryPaper")
+    public String queryQuestion(String id, Model model, HttpServletRequest request) throws UnsupportedEncodingException {
         if (request.getSession().getAttribute("role") == null || !request.getSession().getAttribute("role").equals("admin")) {
             return "404";
         }
-		Paper paper = paperService.getPaperById(id);
-		if (paper != null) {
-			List<Question> radioQuestions = new ArrayList<>();
-			List<Question> multipleQuestions = new ArrayList<>();
-			List<Question> judgeQuestions = new ArrayList<>();
-			List<Question> fillingQuestions = new ArrayList<>();
-			List<Question> essayQuestions = new ArrayList<>();
-			String[] radioIds = paper.getRadioIds().split(",");
-			for (String questionId : radioIds) {
-				Question questionById = questionService.getQuestionById(questionId);
-				if (questionById != null) {
-					radioQuestions.add(questionById);
-				}
-			}
-			String[] multipleIds = paper.getMultipleIds().split(",");
-			for (String questionId : multipleIds) {
-				Question questionById = questionService.getQuestionById(questionId);
-				if (questionById != null) {
-					multipleQuestions.add(questionById);
-				}
-			}
-			String[] judgeIds = paper.getJudgeIds().split(",");
-			for (String questionId : judgeIds) {
-				Question questionById = questionService.getQuestionById(questionId);
-				if (questionById != null) {
-					judgeQuestions.add(questionById);
-				}
-			}
-			String[] fillingIds = paper.getFillingIds().split(",");
-			for (String questionId : fillingIds) {
-				Question questionById = questionService.getQuestionById(questionId);
-				if (questionById != null) {
-					fillingQuestions.add(questionById);
-				}
-			}
-			String[] essayIds = paper.getEssayIds().split(",");
-			for (String questionId : essayIds) {
-				Question questionById = questionService.getQuestionById(questionId);
-				if (questionById != null) {
-					essayQuestions.add(questionById);
-				}
-			}
-			model.addAttribute("paper", paper);
-			model.addAttribute("radioQuestions", radioQuestions);
-			model.addAttribute("multipleQuestions", multipleQuestions);
-			model.addAttribute("judgeQuestions", judgeQuestions);
-			model.addAttribute("fillingQuestions", fillingQuestions);
-			model.addAttribute("essayQuestions", essayQuestions);
-			return "admin/paper";
-		}
-		return "redirect:/papersPage";
-	}
+        Paper paper = paperService.getPaperById(id);
+        if (paper != null) {
+            List<Question> radioQuestions = new ArrayList<>();
+            List<Question> multipleQuestions = new ArrayList<>();
+//            List<Question> judgeQuestions = new ArrayList<>();
+            List<Question> fillingQuestions = new ArrayList<>();
+            List<Question> essayQuestions = new ArrayList<>();
+            String[] radioIds = paper.getRadioIds().split(",");
+            for (String questionId : radioIds) {
+                Question questionById = questionService.getQuestionById(questionId);
+                if (questionById != null) {
+                    radioQuestions.add(questionById);
+                }
+            }
+            String[] multipleIds = paper.getMultipleIds().split(",");
+            for (String questionId : multipleIds) {
+                Question questionById = questionService.getQuestionById(questionId);
+                if (questionById != null) {
+                    multipleQuestions.add(questionById);
+                }
+            }
+//            String[] judgeIds = paper.getJudgeIds().split(",");
+//            for (String questionId : judgeIds) {
+//                Question questionById = questionService.getQuestionById(questionId);
+//                if (questionById != null) {
+//                    judgeQuestions.add(questionById);
+//                }
+//            }
+            String[] fillingIds = paper.getFillingIds().split(",");
+            for (String questionId : fillingIds) {
+                Question questionById = questionService.getQuestionById(questionId);
+                if (questionById != null) {
+                    fillingQuestions.add(questionById);
+                }
+            }
+            String[] essayIds = paper.getEssayIds().split(",");
+            for (String questionId : essayIds) {
+                Question questionById = questionService.getQuestionById(questionId);
+                if (questionById != null) {
+                    essayQuestions.add(questionById);
+                }
+            }
+            model.addAttribute("paper", paper);
+            model.addAttribute("radioQuestions", radioQuestions);
+            model.addAttribute("multipleQuestions", multipleQuestions);
+//            model.addAttribute("judgeQuestions", judgeQuestions);
+            model.addAttribute("fillingQuestions", fillingQuestions);
+            model.addAttribute("essayQuestions", essayQuestions);
+            return "admin/paper";
+        }
+        return "redirect:/papersPage";
+    }
 
-	@RequestMapping("/takePaper")
-	public String takePaper(String id, Model model, HttpServletRequest request) throws UnsupportedEncodingException {
-		if (request.getSession().getAttribute("id") == null) {
-			List<Paper> allPapers = paperService.getAllPapers();
-			model.addAttribute("papers", allPapers);
-			model.addAttribute("error", "请登录后参加考试!");
-			return "index";
-		}
+    @RequestMapping("/takePaper")
+    public String takePaper(String id, Model model, HttpServletRequest request) throws UnsupportedEncodingException {
+        if (request.getSession().getAttribute("id") == null) {
+            List<Paper> allPapers = paperService.getAllPapers();
+            model.addAttribute("papers", allPapers);
+            model.addAttribute("error", "请登录后参加考试!");
+            return "index";
+        }
         if (request.getSession().getAttribute("role").equals("admin")) {
             List<Paper> allPapers = paperService.getAllPapers();
             model.addAttribute("papers", allPapers);
             model.addAttribute("error", "管理员无法参加考试!");
             return "index";
         }
-		Paper paper = paperService.getPaperById(id);
-		if (paper != null) {
-			List<Question> radioQuestions = new ArrayList<>();
-			List<Question> multipleQuestions = new ArrayList<>();
-			List<Question> judgeQuestions = new ArrayList<>();
-			List<Question> fillingQuestions = new ArrayList<>();
-			List<Question> essayQuestions = new ArrayList<>();
-			String[] radioIds = paper.getRadioIds().split(",");
-			for (String questionId : radioIds) {
-				Question questionById = questionService.getQuestionById(questionId);
-				if (questionById != null) {
-					radioQuestions.add(questionById);
-				}
-			}
-			String[] multipleIds = paper.getMultipleIds().split(",");
-			for (String questionId : multipleIds) {
-				Question questionById = questionService.getQuestionById(questionId);
-				if (questionById != null) {
-					multipleQuestions.add(questionById);
-				}
-			}
-			String[] judgeIds = paper.getJudgeIds().split(",");
-			for (String questionId : judgeIds) {
-				Question questionById = questionService.getQuestionById(questionId);
-				if (questionById != null) {
-					judgeQuestions.add(questionById);
-				}
-			}
-			String[] fillingIds = paper.getFillingIds().split(",");
-			for (String questionId : fillingIds) {
-				Question questionById = questionService.getQuestionById(questionId);
-				if (questionById != null) {
-					fillingQuestions.add(questionById);
-				}
-			}
-			String[] essayIds = paper.getEssayIds().split(",");
-			for (String questionId : essayIds) {
-				Question questionById = questionService.getQuestionById(questionId);
-				if (questionById != null) {
-					essayQuestions.add(questionById);
-				}
-			}
-			model.addAttribute("paper", paper);
-			model.addAttribute("radioQuestions", radioQuestions);
-			model.addAttribute("multipleQuestions", multipleQuestions);
-			model.addAttribute("judgeQuestions", judgeQuestions);
-			model.addAttribute("fillingQuestions", fillingQuestions);
-			model.addAttribute("essayQuestions", essayQuestions);
-			return "student/paper";
-		}
-		return "redirect:/";
-	}
+        Paper paper = paperService.getPaperById(id);
+        if (paper != null) {
+            List<Question> radioQuestions = new ArrayList<>();
+            List<Question> multipleQuestions = new ArrayList<>();
+//            List<Question> judgeQuestions = new ArrayList<>();
+            List<Question> fillingQuestions = new ArrayList<>();
+            List<Question> essayQuestions = new ArrayList<>();
+            String[] radioIds = paper.getRadioIds().split(",");
+            for (String questionId : radioIds) {
+                Question questionById = questionService.getQuestionById(questionId);
+                if (questionById != null) {
+                    radioQuestions.add(questionById);
+                }
+            }
+            String[] multipleIds = paper.getMultipleIds().split(",");
+            for (String questionId : multipleIds) {
+                Question questionById = questionService.getQuestionById(questionId);
+                if (questionById != null) {
+                    multipleQuestions.add(questionById);
+                }
+            }
+//            String[] judgeIds = paper.getJudgeIds().split(",");
+//            for (String questionId : judgeIds) {
+//                Question questionById = questionService.getQuestionById(questionId);
+//                if (questionById != null) {
+//                    judgeQuestions.add(questionById);
+//                }
+//            }
+            String[] fillingIds = paper.getFillingIds().split(",");
+            for (String questionId : fillingIds) {
+                Question questionById = questionService.getQuestionById(questionId);
+                if (questionById != null) {
+                    fillingQuestions.add(questionById);
+                }
+            }
+            String[] essayIds = paper.getEssayIds().split(",");
+            for (String questionId : essayIds) {
+                Question questionById = questionService.getQuestionById(questionId);
+                if (questionById != null) {
+                    essayQuestions.add(questionById);
+                }
+            }
+            model.addAttribute("paper", paper);
+            model.addAttribute("radioQuestions", radioQuestions);
+            model.addAttribute("multipleQuestions", multipleQuestions);
+//            model.addAttribute("judgeQuestions", judgeQuestions);
+            model.addAttribute("fillingQuestions", fillingQuestions);
+            model.addAttribute("essayQuestions", essayQuestions);
+            return "student/paper";
+        }
+        return "redirect:/";
+    }
 
-	@RequestMapping(value = "takePaper", method = RequestMethod.POST)
-	public String takePaper(String paperId, String userId, HttpServletRequest request, Model model) {
-		System.out.println("-> 交卷 : " + paperId + " - " + userId);
+    @RequestMapping(value = "takePaper", method = RequestMethod.POST)
+    public String takePaper(String paperId, String userId, HttpServletRequest request, Model model) {
+        System.out.println("-> 交卷 : " + paperId + " - " + userId);
         if (request.getSession().getAttribute("role") != null && request.getSession().getAttribute("role").equals("admin")) {
             List<Paper> allPapers = paperService.getAllPapers();
             model.addAttribute("papers", allPapers);
@@ -490,156 +467,156 @@ public class PaperController {
             return "index";
         }
         Student student = studentService.getStudentById(userId);
-		// 自动评卷，支持单选多选和判断题
-		Paper paper = paperService.getPaperById(paperId);
-		List<ErrorQuestion> errorRadioQuestions = new ArrayList<>();
-		List<ErrorQuestion> errorMultipleQuestions = new ArrayList<>();
-		List<ErrorQuestion> errorJudgeQuestions = new ArrayList<>();
-		List<ErrorQuestion> errorFillingQuestions = new ArrayList<>();
-		List<ErrorQuestion> errorEssayQuestions = new ArrayList<>();
-		if (paper != null) {
-			Question question;
-			ErrorQuestion errorQuestion;
-			if (paper.getRadioNum() > 0) {
-				String[] radioIds = paper.getRadioIds().split(",");
-				for (String radioId : radioIds) {
-					question = questionService.getQuestionById(radioId);
-					if (question != null) {
-						if (!question.getRightOption().equals(request.getParameter(radioId))) {
-							errorQuestion = new ErrorQuestion();
-							errorQuestion.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-							errorQuestion.setQuestion(question);
-							errorQuestion.setType(question.getType());
-							errorQuestion.setStudent(student);
-							errorQuestion.setMyOption(request.getParameter(radioId));
-							System.out.println(errorQuestion);
-							errorRadioQuestions.add(errorQuestion);
-						}
-					}
-				}
-			}
-			if (paper.getMultipleNum() > 0) {
-				String[] multipleIds = paper.getMultipleIds().split(",");
-				for (String multipleId : multipleIds) {
-					question = questionService.getQuestionById(multipleId);
-					if (question != null) {
-						String[] values = request.getParameterValues(multipleId);
-						StringBuilder sBuilder = new StringBuilder();
-						String options = null;
-						if (values != null) {
-							for (String value : values) {
-								sBuilder.append(value).append(",");
-							}
-							if (sBuilder.length() > 0) {
-								options = sBuilder.toString().substring(0, sBuilder.length() - 1);
-							}
-						}
-						if (!question.getRightOption().equals(options)) {
-							errorQuestion = new ErrorQuestion();
-							errorQuestion.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-							errorQuestion.setQuestion(question);
-							errorQuestion.setType(question.getType());
-							errorQuestion.setStudent(student);
-							errorQuestion.setMyOption(options);
-							System.out.println(errorQuestion);
-							errorMultipleQuestions.add(errorQuestion);
-						}
-					}
-				}
-			}
-			if (paper.getJudgeNum() > 0) {
-				String[] judgeIds = paper.getJudgeIds().split(",");
-				for (String judgeId : judgeIds) {
-					question = questionService.getQuestionById(judgeId);
-					if (question != null) {
-						if (question.getRightJudge() != Boolean.parseBoolean(request.getParameter(judgeId))) {
-							errorQuestion = new ErrorQuestion();
-							errorQuestion.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-							errorQuestion.setQuestion(question);
-							errorQuestion.setType(question.getType());
-							errorQuestion.setStudent(student);
-							errorQuestion.setMyOption(request.getParameter(judgeId));
-							System.out.println(errorQuestion);
-							errorJudgeQuestions.add(errorQuestion);
-						}
-					}
-				}
-			}
-			if (paper.getFillingNum() > 0) {
-				String[] fillingIds = paper.getFillingIds().split(",");
-				for (String fillingId : fillingIds) {
-					question = questionService.getQuestionById(fillingId);
-					if (question != null) {
+        // 自动评卷，支持单选多选和判断题
+        Paper paper = paperService.getPaperById(paperId);
+        List<ErrorQuestion> errorRadioQuestions = new ArrayList<>();
+        List<ErrorQuestion> errorMultipleQuestions = new ArrayList<>();
+//        List<ErrorQuestion> errorJudgeQuestions = new ArrayList<>();
+        List<ErrorQuestion> errorFillingQuestions = new ArrayList<>();
+        List<ErrorQuestion> errorEssayQuestions = new ArrayList<>();
+        if (paper != null) {
+            Question question;
+            ErrorQuestion errorQuestion;
+            if (paper.getRadioNum() > 0) {
+                String[] radioIds = paper.getRadioIds().split(",");
+                for (String radioId : radioIds) {
+                    question = questionService.getQuestionById(radioId);
+                    if (question != null) {
+                        if (!question.getRightOption().equals(request.getParameter(radioId))) {
+                            errorQuestion = new ErrorQuestion();
+                            errorQuestion.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+                            errorQuestion.setQuestion(question);
+                            errorQuestion.setType(question.getType());
+                            errorQuestion.setStudent(student);
+                            errorQuestion.setMyOption(request.getParameter(radioId));
+                            System.out.println(errorQuestion);
+                            errorRadioQuestions.add(errorQuestion);
+                        }
+                    }
+                }
+            }
+            if (paper.getMultipleNum() > 0) {
+                String[] multipleIds = paper.getMultipleIds().split(",");
+                for (String multipleId : multipleIds) {
+                    question = questionService.getQuestionById(multipleId);
+                    if (question != null) {
+                        String[] values = request.getParameterValues(multipleId);
+                        StringBuilder sBuilder = new StringBuilder();
+                        String options = null;
+                        if (values != null) {
+                            for (String value : values) {
+                                sBuilder.append(value).append(",");
+                            }
+                            if (sBuilder.length() > 0) {
+                                options = sBuilder.toString().substring(0, sBuilder.length() - 1);
+                            }
+                        }
+                        if (!question.getRightOption().equals(options)) {
+                            errorQuestion = new ErrorQuestion();
+                            errorQuestion.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+                            errorQuestion.setQuestion(question);
+                            errorQuestion.setType(question.getType());
+                            errorQuestion.setStudent(student);
+                            errorQuestion.setMyOption(options);
+                            System.out.println(errorQuestion);
+                            errorMultipleQuestions.add(errorQuestion);
+                        }
+                    }
+                }
+            }
+//            if (paper.getJudgeNum() > 0) {
+//                String[] judgeIds = paper.getJudgeIds().split(",");
+//                for (String judgeId : judgeIds) {
+//                    question = questionService.getQuestionById(judgeId);
+//                    if (question != null) {
+//                        if (question.getRightJudge() != Boolean.parseBoolean(request.getParameter(judgeId))) {
+//                            errorQuestion = new ErrorQuestion();
+//                            errorQuestion.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+//                            errorQuestion.setQuestion(question);
+//                            errorQuestion.setType(question.getType());
+//                            errorQuestion.setStudent(student);
+//                            errorQuestion.setMyOption(request.getParameter(judgeId));
+//                            System.out.println(errorQuestion);
+//                            errorJudgeQuestions.add(errorQuestion);
+//                        }
+//                    }
+//                }
+//            }
+            if (paper.getFillingNum() > 0) {
+                String[] fillingIds = paper.getFillingIds().split(",");
+                for (String fillingId : fillingIds) {
+                    question = questionService.getQuestionById(fillingId);
+                    if (question != null) {
 //						if (!question.getRightFilling().equals(request.getParameter(fillingId))) {
-							errorQuestion = new ErrorQuestion();
-							errorQuestion.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-							errorQuestion.setQuestion(question);
-							errorQuestion.setType(question.getType());
-							errorQuestion.setStudent(student);
-							errorQuestion.setMyFilling(request.getParameter(fillingId));
-							System.out.println(errorQuestion);
-							errorFillingQuestions.add(errorQuestion);
+                        errorQuestion = new ErrorQuestion();
+                        errorQuestion.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+                        errorQuestion.setQuestion(question);
+                        errorQuestion.setType(question.getType());
+                        errorQuestion.setStudent(student);
+                        errorQuestion.setMyFilling(request.getParameter(fillingId));
+                        System.out.println(errorQuestion);
+                        errorFillingQuestions.add(errorQuestion);
 //						}
-					}
-				}
-			}
-			if (paper.getEssayNum() > 0) {
-				String[] essayIds = paper.getEssayIds().split(",");
-				for (String essayId : essayIds) {
-					question = questionService.getQuestionById(essayId);
-					if (question != null) {
+                    }
+                }
+            }
+            if (paper.getEssayNum() > 0) {
+                String[] essayIds = paper.getEssayIds().split(",");
+                for (String essayId : essayIds) {
+                    question = questionService.getQuestionById(essayId);
+                    if (question != null) {
 //						if (!question.getRightFilling().equals(request.getParameter(essayId))) {
-							errorQuestion = new ErrorQuestion();
-							errorQuestion.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-							errorQuestion.setQuestion(question);
-							errorQuestion.setType(question.getType());
-							errorQuestion.setStudent(student);
-							errorQuestion.setMyEssay(request.getParameter(essayId));
-							System.out.println(errorQuestion);
-							errorEssayQuestions.add(errorQuestion);
+                        errorQuestion = new ErrorQuestion();
+                        errorQuestion.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+                        errorQuestion.setQuestion(question);
+                        errorQuestion.setType(question.getType());
+                        errorQuestion.setStudent(student);
+                        errorQuestion.setMyEssay(request.getParameter(essayId));
+                        System.out.println(errorQuestion);
+                        errorEssayQuestions.add(errorQuestion);
 //						}
-					}
-				}
-			}
-			model.addAttribute("errorRadioQuestions", errorRadioQuestions);
-			model.addAttribute("errorMultipleQuestions", errorMultipleQuestions);
-			model.addAttribute("errorJudgeQuestions", errorJudgeQuestions);
-			model.addAttribute("errorFillingQuestions", errorFillingQuestions);
-			model.addAttribute("errorEssayQuestions", errorEssayQuestions);
-			model.addAttribute("paper", paper);
-			return "student/paperResult";
-		}
-		return "redirect:/";
-	}
+                    }
+                }
+            }
+            model.addAttribute("errorRadioQuestions", errorRadioQuestions);
+            model.addAttribute("errorMultipleQuestions", errorMultipleQuestions);
+//            model.addAttribute("errorJudgeQuestions", errorJudgeQuestions);
+            model.addAttribute("errorFillingQuestions", errorFillingQuestions);
+            model.addAttribute("errorEssayQuestions", errorEssayQuestions);
+            model.addAttribute("paper", paper);
+            return "student/paperResult";
+        }
+        return "redirect:/";
+    }
 
-	@RequestMapping("/deletePaper")
-	public String deletePaper(String id, HttpServletRequest request) {
+    @RequestMapping("/deletePaper")
+    public String deletePaper(String id, HttpServletRequest request) {
         if (request.getSession().getAttribute("role") == null || !request.getSession().getAttribute("role").equals("admin")) {
             return "404";
         }
-		if (id != null) {
-			String ids[] = id.split(",");
-			for (String id1 : ids) {
-				paperService.delete(id1);
-			}
-		}
-		return "redirect:/papersPage";
-	}
+        if (id != null) {
+            String ids[] = id.split(",");
+            for (String id1 : ids) {
+                paperService.delete(id1);
+            }
+        }
+        return "redirect:/papersPage";
+    }
 
-	@RequestMapping("/updatePaper")
-	public String updatePaper(String id, Model model, HttpServletRequest request) {
+    @RequestMapping("/updatePaper")
+    public String updatePaper(String id, Model model, HttpServletRequest request) {
         if (request.getSession().getAttribute("role") == null || !request.getSession().getAttribute("role").equals("admin")) {
             return "404";
         }
-		Paper paper = paperService.getPaperById(id);
-		if (paper != null) {
-			model.addAttribute("paper", paper);
-			List<Question> allQuestions = questionService.getAllQuestions();
-			model.addAttribute("questions", allQuestions);
-			return "admin/paperUpd";
-		}
-		return "redirect:/papersPage";
-	}
+        Paper paper = paperService.getPaperById(id);
+        if (paper != null) {
+            model.addAttribute("paper", paper);
+            List<Question> allQuestions = questionService.getAllQuestions();
+            model.addAttribute("questions", allQuestions);
+            return "admin/paperUpd";
+        }
+        return "redirect:/papersPage";
+    }
 
 //	@RequestMapping("/downPaper")
 //	public ResponseEntity<byte[]> download(String paperId, HttpServletRequest request, HttpServletResponse response)
