@@ -12,6 +12,6 @@
         id, user_name, password
     </sql>
     <select id="selectAdminByUserName" resultMap="adminMap">
-        select <include refid="base_column"/> from admin where user_name=#{userName};
+        select <include refid="base_column"/> from admin where user_name=#{userName} limit 1;
     </select>
 </mapper>

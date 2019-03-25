@@ -16,7 +16,7 @@
         id, student_num, user_name, real_name, chapter, section, password
     </sql>
     <select id="selectStudentByUserName" resultMap="studentMap">
-        select <include refid="base_column"/> from student where user_name=#{userName};
+        select <include refid="base_column"/> from student where user_name=#{userName} limit 1;
     </select>
     <select id="selectStudentById" resultMap="studentMap">
         select <include refid="base_column"/> from student where id=#{id};

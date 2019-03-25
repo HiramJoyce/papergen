@@ -34,12 +34,12 @@
                 <label for="section" class="col-sm-2 control-label">年级</label>
                 <div class="col-sm-10">
                     <div class="checkbox">
-                        <label><input type="radio" id="section" name="section" value="1" ${student.section == 3 ? "checked" : ""}> 1</label>
-                        <label><input type="radio" name="section" value="2" ${student.section == 3 ? "checked" : ""}> 2</label>
+                        <label><input type="radio" id="section" name="section" value="1" ${student.section == 1 ? "checked" : ""}> 1</label>
+                        <label><input type="radio" name="section" value="2" ${student.section == 2 ? "checked" : ""}> 2</label>
                         <label><input type="radio" name="section" value="3" ${student.section == 3 ? "checked" : ""}> 3</label>
-                        <label><input type="radio" name="section" value="4" ${student.section == 3 ? "checked" : ""}> 4</label>
-                        <label><input type="radio" name="section" value="5" ${student.section == 3 ? "checked" : ""}> 5</label>
-                        <label><input type="radio" name="section" value="6" ${student.section == 3 ? "checked" : ""}> 6</label>
+                        <label><input type="radio" name="section" value="4" ${student.section == 4 ? "checked" : ""}> 4</label>
+                        <label><input type="radio" name="section" value="5" ${student.section == 5 ? "checked" : ""}> 5</label>
+                        <label><input type="radio" name="section" value="6" ${student.section == 6 ? "checked" : ""}> 6</label>
                     </div>
                 </div>
             </div>

@@ -45,8 +45,6 @@ public class StudentController {
     public String studentRegister(String studentNum, String userName, String realName, String password, String chapter, String section, Model model, HttpServletRequest request) {
         System.out.println("-> student register : " + userName + " - " + password + " - " + realName);
         Student student = studentService.register(studentNum, userName, realName, password, chapter, section);
-        List<Paper> allPapers = paperService.getAllPapers();
-        model.addAttribute("papers", allPapers);
         if (student == null) {
             model.addAttribute("error","注册失败错误");
             return "index";
@@ -54,7 +52,7 @@ public class StudentController {
         request.getSession().setAttribute("id", student.getId());
         request.getSession().setAttribute("realName", student.getRealName());
         request.getSession().setAttribute("role", "student");
-        return "index";
+        return "redirect:/";
     }
 
     @RequestMapping("/studentInfo")

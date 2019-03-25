@@ -44,7 +44,6 @@
                         <c:if test="${paper.level==3}">中等</c:if>
                         <c:if test="${paper.level==4}">较难</c:if>
                         <c:if test="${paper.level==5}">巨难</c:if>
-                        <a href="${ctx}/downPaper?paperId=${paper.id}">导出试卷</a>
                     </span>
                 </span>
         </h1>

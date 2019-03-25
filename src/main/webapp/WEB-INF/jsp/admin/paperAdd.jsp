@@ -242,6 +242,45 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="chapter1" class="col-sm-2 control-label">年段</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <label><input type="radio" id="chapter1" name="chapter" value="1" checked> 小学</label>
+                                <label><input type="radio" name="chapter" value="2"> 初中</label>
+                                <label><input type="radio" name="chapter" value="3"> 高中</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="section1" class="col-sm-2 control-label">年级</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <label><input type="radio" id="section1" name="section" value="1" checked> 1</label>
+                                <label><input type="radio" name="section" value="2"> 2</label>
+                                <label><input type="radio" name="section" value="3"> 3</label>
+                                <label><input type="radio" name="section" value="4"> 4</label>
+                                <label><input type="radio" name="section" value="5"> 5</label>
+                                <label><input type="radio" name="section" value="6"> 6</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject1" class="col-sm-2 control-label">科目</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <label><input type="radio" id="subject1" name="subject" value="1" checked> 语文</label>
+                                <label><input type="radio" name="subject" value="2"> 数学</label>
+                                <label><input type="radio" name="subject" value="3"> 外语</label>
+                                <label><input type="radio" name="subject" value="4"> 政治</label>
+                                <label><input type="radio" name="subject" value="5"> 历史</label>
+                                <label><input type="radio" name="subject" value="6"> 地理</label>
+                                <label><input type="radio" name="subject" value="7"> 物理</label>
+                                <label><input type="radio" name="subject" value="8"> 化学</label>
+                                <label><input type="radio" name="subject" value="9"> 生物</label>
+                            </div>
+                        </div>
+                    </div>
                     <table class="table table-bordered">
                         <thead>
                         <tr>
